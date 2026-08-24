@@ -81,3 +81,15 @@ Designed to run entirely locally without Docker to conserve RAM.
 
 ## 🧠 Why This Matters (For AI Engineering)
 A robust AI product needs continuous evaluation. By treating production traffic as a raw asset and using smaller, faster models to auto-curate it, we create a **flywheel effect**: the more the product is used, the more robust the evaluation suite becomes, allowing for faster and safer model iteration.
+
+## 🏢 Scaling to Production (Enterprise Architecture)
+
+While this repository is built to run locally on a single machine (using SQLite and APScheduler to conserve RAM), the architecture directly translates to a big tech stack. Here is how this pipeline scales for millions of daily interactions:
+
+| Component | Local / PoC Stack | Enterprise / Big Tech Stack |
+| :--- | :--- | :--- |
+| **Log Ingestion** | Local Python Script | **Kafka / AWS Kinesis** streaming into a data warehouse like **Snowflake** or **ClickHouse**. |
+| **Embeddings & Search** | In-memory `sentence-transformers` | Distributed embeddings via **OpenAI/Cohere** stored in a Vector DB like **Pinecone, Milvus, or Qdrant**. |
+| **Clustering Pipeline** | Local `scikit-learn` & `hdbscan` | **Apache Spark MLlib** or distributed batch jobs scheduled via **Apache Airflow / Prefect**. |
+| **Auto-Labeling Workers** | `APScheduler` loop | Distributed **Celery / Redis** worker queues scaling LLM-as-a-judge calls asynchronously. |
+| **Eval Runner (CI/CD)** | Manual script execution | Integrated into **GitHub Actions / GitLab CI** to automatically block PRs if the regression tracker flags model degradation. |
