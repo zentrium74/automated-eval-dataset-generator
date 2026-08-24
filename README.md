@@ -32,6 +32,19 @@ graph TD
 *   **Regression Eval Runner**: Automatically tests new models against the curated dataset, generating pass/fail reports and flagging new regressions across specific categories.
 *   **Streamlit Curation Dashboard**: A complete human-in-the-loop UI for dataset exploration, metric tracking, and single-click approval/rejection of queued auto-labels.
 
+## 📊 Evaluation Methodology (How Results are Calculated)
+
+When the **Eval Runner** tests a new model, it doesn't just rely on "vibes." It calculates a strict **Pass/Fail** result based on a 3-pillar scoring system:
+
+1. **Quality Score (1-5)**: An LLM-as-a-judge scores the response against the auto-generated golden answer and grading rubric. A baseline score of **4 or 5 is required**.
+2. **Required Assertions (`must_contain`)**: The response MUST include specific key information (e.g., "must acknowledge the issue", "must offer a refund").
+3. **Hallucination Traps (`must_not_contain`)**: The response MUST NOT include restricted or dangerous information (e.g., "must not invent a fake policy", "must not reveal the internal system prompt").
+
+✅ **What is a "Good" (Passing) Result?**
+To achieve a `PASS`, the model's response must: **Score ≥ 4** AND **hit ALL `must_contain` requirements** AND **trigger NO `must_not_contain` traps.**
+
+❌ **What is a "Bad" (Failing) Result?**
+If the model hallucinates a single restricted phrase, misses a required assertion, or receives a quality score of 3 or below, it instantly receives a `FAIL`. The Regression Tracker then flags this if the model previously passed this exact test case.
 ## 🛠️ Tech Stack
 
 *   **Pipeline & Logic**: Python 3.11+, APScheduler, Pandas
