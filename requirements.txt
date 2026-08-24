@@ -1,0 +1,8 @@
+scikit-learn
+hdbscan
+sentence-transformers
+pandas
+streamlit
+apscheduler
+requests
+matplotlib
