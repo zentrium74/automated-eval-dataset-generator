@@ -45,13 +45,20 @@ To achieve a `PASS`, the model's response must: **Score ≥ 4** AND **hit ALL `m
 
 ❌ **What is a "Bad" (Failing) Result?**
 If the model hallucinates a single restricted phrase, misses a required assertion, or receives a quality score of 3 or below, it instantly receives a `FAIL`. The Regression Tracker then flags this if the model previously passed this exact test case.
-## 🛠️ Tech Stack
+## 🛠️ Tech Stack & Production Equivalents
 
-*   **Pipeline & Logic**: Python 3.11+, APScheduler, Pandas
-*   **Embeddings & ML**: `sentence-transformers` (`all-MiniLM-L6-v2`), `scikit-learn`, `hdbscan`
-*   **LLM Inference**: OpenRouter API (Fallback: Local Ollama)
-*   **Database**: SQLite (Optimized for local, low-RAM environments)
-*   **UI/Dashboard**: Streamlit
+This project was architected for a production tech stack, but explicitly implemented using lightweight local alternatives to run with zero cloud costs and low RAM (no Docker required).
+
+| Component | Production / Target Stack | What Was Used Here (Local PoC) | Why This Choice |
+| :--- | :--- | :--- | :--- |
+| **Language** | Python 3.11+ | Python 3.11+ | Standard for ML pipelines |
+| **Log Storage** | PostgreSQL or ClickHouse | **SQLite** | Queryable log warehouse (zero-setup local DB) |
+| **Clustering** | scikit-learn + HDBSCAN | scikit-learn + HDBSCAN | Interaction pattern discovery |
+| **LLM** | GPT-4o or Claude Sonnet | **Nemotron / OpenRouter** | High-quality labeling on free-tier APIs |
+| **Eval Runner** | Custom harness | Custom harness | Run evals against the dataset |
+| **Dashboard** | Streamlit | Streamlit | Fast dataset explorer and curator UI |
+| **Scheduler** | Cron or Celery | **APScheduler** | Automated processing without heavy Redis/worker requirements |
+| **Containerization**| Docker + docker-compose | **Native Local Execution** | Avoids heavy Docker Desktop RAM overhead |
 
 ## 🚀 How to Run (Local Environment)
 
